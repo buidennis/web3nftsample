@@ -38,11 +38,9 @@ contract MyToken is ERC721, ERC721URIStorage, Ownable {
     {
         return super.tokenURI(tokenId);
     }
-}
 
-contract FiredGuys is ERC721, ERC721URIStorage, Ownable {
+    mapping(string => uint8) existingURIs;
 
-    // ...
 
     function payToMint(
         address recipient,
@@ -59,6 +57,10 @@ contract FiredGuys is ERC721, ERC721URIStorage, Ownable {
         _setTokenURI(newItemId, metadataURI);
 
         return newItemId;
+    }
+
+    function isContentOwned(string memory uri) public view returns (bool) {
+        return existingURIs[uri] == 1;
     }
 
 }
