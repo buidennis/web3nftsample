@@ -3,17 +3,21 @@ const { ethers } = require("hardhat");
 
 describe("Greeter", function () {
   it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+    const FiredGuys = await ethers.getContractFactory("FiredGuys");
+    const firedguys = await FiredGuys.deploy();
+    await firedguys.deployed();
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+    const receipt = "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a";
+    const metadataURI = 'cid/test.png';
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    let balance = await firedguys.balanceOf(receipt);
+    expect(balance).to.equal(0);
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
+    const newlyMintedToken = await firedguys.payToMint(receipt, metadataURI, { value: ethers.utils.parseEther('0.05')});
+    await newlyMintedToken.wait();
 
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    balance = await firedguys.balanceOf(receipt);
+     
+    expect(await firedguys.isContentOwned(metadataURI)).to.equal(true);
   });
 });
